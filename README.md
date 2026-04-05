@@ -4,6 +4,9 @@
 
 
 ## 📸 Preview
+<img width="503" height="491" alt="Captura de Tela 2026-04-05 às 18 25 59" src="https://github.com/user-attachments/assets/033fab60-77f3-486c-be9c-1a3e9ea4401b" />
+
+
 
 ```
 ┌─────────────────────────────────────┐
