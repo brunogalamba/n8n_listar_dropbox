@@ -1,0 +1,714 @@
+{
+  "name": "Listar Arquivos Dropbox",
+  "nodes": [
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "=<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>YOUR_COMPANY — Acesso</title>\n<link href=\"https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@800&display=swap\" rel=\"stylesheet\">\n<style>\n*{margin:0;padding:0;box-sizing:border-box}\nbody{background:#0a0a0f;color:#e8e8f0;font-family:'Space Mono',monospace;min-height:100vh;display:flex;align-items:center;justify-content:center}\nbody::before{content:\"\";position:fixed;inset:0;background-image:linear-gradient(rgba(0,97,254,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,97,254,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}\n.card{background:#111118;border:1px solid #1e1e2e;border-radius:6px;padding:40px 36px;width:100%;max-width:380px;position:relative;z-index:1}\n.card::before{content:\"\";position:absolute;top:0;left:0;right:0;height:2px;background:#0061fe;border-radius:6px 6px 0 0}\n.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,97,254,.12);border:1px solid rgba(0,97,254,.3);color:#00c2ff;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:2px;margin-bottom:16px}\n.dot{width:6px;height:6px;border-radius:50%;background:#00c2ff;animation:pulse 2s ease-in-out infinite}\n@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}\nh1{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-1px;margin-bottom:6px}\nh1 span{color:#0061fe}\n.sub{font-size:10px;color:#5a5a72;margin-bottom:28px}\nlabel{display:block;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#5a5a72;margin-bottom:6px}\ninput{width:100%;background:#0a0a0f;border:1px solid #1e1e2e;color:#e8e8f0;font-family:'Space Mono',monospace;font-size:12px;padding:10px 14px;border-radius:3px;outline:none;transition:border-color .2s;margin-bottom:18px}\ninput:focus{border-color:#0061fe}\nbutton{width:100%;background:#0061fe;border:none;color:#fff;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:12px;border-radius:3px;cursor:pointer}\nbutton:disabled{opacity:.4;cursor:not-allowed}\n.erro{display:none;background:rgba(255,59,48,.08);border:1px solid rgba(255,59,48,.3);color:#ff6b6b;font-size:10px;padding:10px 14px;border-radius:3px;margin-bottom:18px}\n</style>\n</head>\n<body>\n<div class=\"card\">\n  <div class=\"badge\"><div class=\"dot\"></div>Dropbox · YOUR_COMPANY</div>\n  <h1>Acesso ao <span>Gerenciador</span></h1>\n  <p class=\"sub\">Informe suas credenciais para continuar</p>\n  <div class=\"erro\" id=\"erro\">Usuário ou senha inválidos.</div>\n  <label for=\"u\">Usuário</label>\n  <input type=\"text\" id=\"u\" placeholder=\"seu usuário\">\n  <label for=\"p\">Senha</label>\n  <input type=\"password\" id=\"p\" placeholder=\"••••••••\">\n  <button id=\"btn\" onclick=\"entrar()\">Entrar</button>\n</div>\n<script>\ndocument.getElementById('p').onkeydown = function(e){ if(e.key==='Enter') entrar(); };\ndocument.getElementById('u').onkeydown = function(e){ if(e.key==='Enter') document.getElementById('p').focus(); };\n\nfunction entrar(){\n  var u   = document.getElementById('u').value.trim();\n  var p   = document.getElementById('p').value;\n  var btn = document.getElementById('btn');\n  var err = document.getElementById('erro');\n\n  if(!u || !p){\n    err.textContent = 'Preencha usuário e senha.';\n    err.style.display = 'block';\n    return;\n  }\n\n  btn.disabled = true;\n  btn.textContent = 'Aguarde...';\n  err.style.display = 'none';\n\n  fetch('/webhook/dropbox-auth', {\n    method: 'POST',\n    headers: { 'Content-Type': 'application/json' },\n    body: JSON.stringify({ user: u, pwd: p })\n  })\n  .then(function(r) {\n    if (r.status === 200) {\n      return r.text().then(function(html) {\n        document.open(); document.write(html); document.close();\n      });\n    }\n    btn.disabled = false;\n    btn.textContent = 'Entrar';\n    err.textContent = 'Usuário ou senha inválidos.';\n    err.style.display = 'block';\n  })\n  .catch(function() {\n    btn.disabled = false;\n    btn.textContent = 'Entrar';\n    err.textContent = 'Erro de conexão. Tente novamente.';\n    err.style.display = 'block';\n  });\n}\n</script>\n</body>\n</html>",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              },
+              {
+                "name": "Content-Security-Policy",
+                "value": "script-src 'unsafe-inline' 'self'"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        304,
+        112
+      ],
+      "id": "44fee827-a26e-5d26-8830-884838fe0953",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.html }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1936,
+        896
+      ],
+      "id": "cad70fd4-8303-57e1-ab0b-e6acde557b75",
+      "name": "Respond to Webhook1"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "20b2684a-d753-4ca3-a695-430116ac5f08",
+              "name": "namespace_id",
+              "value": "={{ $json.root_info.root_namespace_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        528,
+        768
+      ],
+      "id": "c78332e5-1ec7-59b6-a902-4c2d702b7861",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dropboxapi.com/2/users/get_current_account",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "dropboxOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        304,
+        768
+      ],
+      "id": "cddac0b9-feea-5f09-90b2-7be77665a230",
+      "name": "Get Name Space",
+      "credentials": {
+        "dropboxOAuth2Api": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Dropbox account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "value": "YOUR_DATATABLE_ID",
+          "mode": "list",
+          "cachedResultName": "dropbox",
+          "cachedResultUrl": "/projects/YOUR_PROJECT_ID/datatables/YOUR_DATATABLE_ID"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "user",
+              "keyValue": "={{ $json.body.user }}"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1.1,
+      "position": [
+        288,
+        320
+      ],
+      "id": "25eb1994-5531-517a-bf1e-0ff2543e4a6b",
+      "name": "Get Login",
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "content": "## Telas Login e Buscador\n",
+        "height": 576,
+        "width": 1312,
+        "color": 4
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "cf5361bc-fb63-5ef4-a623-733d9e1fee97",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "path": "dropbox-lista",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*",
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        80,
+        112
+      ],
+      "id": "6faf5a4e-7b31-5d95-b652-dfea006b87b9",
+      "name": "Webhook_Start",
+      "webhookId": "YOUR_WEBHOOK_ID_WEBHOOK_START"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dropbox-auth",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        80,
+        320
+      ],
+      "id": "30f02ed4-8cb7-5dae-9911-f288d56d4435",
+      "name": "Dropbox-Auth",
+      "webhookId": "YOUR_WEBHOOK_ID_DROPBOX_AUTH"
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all();\n\n// Usuário não existe (linha vazia do Always Output Data)\nif (!rows[0].json.user) {\n  return [{ json: { valid: false } }];\n}\n\n// Compara a senha digitada com a que está na DataTable\nconst senhaDigitada = $('Dropbox-Auth').first().json.body.pwd;\nconst senhaCorreta  = rows[0].json.pwd;\n\nreturn [{ json: { valid: senhaDigitada === senhaCorreta } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        512,
+        320
+      ],
+      "id": "e7a29e6b-6748-5d9f-8756-5623d87ac801",
+      "name": "Check Login"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "386ece29-4935-47e5-98a9-0c953d654216",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "true",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        752,
+        320
+      ],
+      "id": "bf7b95f6-f98b-5d91-adb1-ff7bcc683186",
+      "name": "Login OK ?"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>YOUR_COMPANY — Dashboard</title>\n<link href=\"https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@800&display=swap\" rel=\"stylesheet\">\n<style>\n*{margin:0;padding:0;box-sizing:border-box}\nbody{background:#0a0a0f;color:#e8e8f0;font-family:'Space Mono',monospace;min-height:100vh;display:flex;align-items:center;justify-content:center}\nbody::before{content:\"\";position:fixed;inset:0;background-image:linear-gradient(rgba(0,97,254,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,97,254,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}\n.card{background:#111118;border:1px solid #1e1e2e;border-radius:6px;padding:40px 36px;width:100%;max-width:420px;position:relative;z-index:1;text-align:center}\n.card::before{content:\"\";position:absolute;top:0;left:0;right:0;height:2px;background:#0061fe;border-radius:6px 6px 0 0}\n.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,97,254,.12);border:1px solid rgba(0,97,254,.3);color:#00c2ff;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:2px;margin-bottom:20px}\n.dot{width:6px;height:6px;border-radius:50%;background:#00c2ff;animation:pulse 2s ease-in-out infinite}\n@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}\nh1{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;letter-spacing:-1px;margin-bottom:8px}\nh1 span{color:#0061fe}\n.sub{font-size:10px;color:#5a5a72;margin-bottom:32px}\nbutton{width:100%;background:#0061fe;border:none;color:#fff;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:14px;border-radius:3px;cursor:pointer;margin-bottom:20px}\nbutton:disabled{opacity:.6;cursor:not-allowed}\n.etapas{text-align:left;border:1px solid #1e1e2e;border-radius:4px;overflow:hidden;display:none}\n.etapa{display:flex;align-items:center;gap:12px;padding:10px 14px;font-size:11px;border-bottom:1px solid #1e1e2e;color:#5a5a72;transition:color .3s}\n.etapa:last-child{border-bottom:none}\n.etapa.ativa{color:#e8e8f0}\n.etapa.ok{color:#00e5a0}\n.icone{width:16px;height:16px;flex-shrink:0;display:flex;align-items:center;justify-content:center}\n.spinner{width:12px;height:12px;border:1.5px solid rgba(0,194,255,.2);border-top-color:#00c2ff;border-radius:50%;animation:spin .7s linear infinite}\n@keyframes spin{to{transform:rotate(360deg)}}\n.check{width:12px;height:12px;border-radius:50%;background:#00e5a0;display:flex;align-items:center;justify-content:center}\n.check::after{content:\"\";width:6px;height:4px;border-left:1.5px solid #0a0a0f;border-bottom:1.5px solid #0a0a0f;transform:rotate(-45deg) translate(1px,-1px)}\n.espera{width:8px;height:8px;border-radius:50%;background:#1e1e2e;margin:auto}\n</style>\n</head>\n<body>\n<div class=\"card\">\n  <div class=\"badge\"><div class=\"dot\"></div>Dropbox · YOUR_COMPANY</div>\n  <h1>Bem-vindo ao <span>Gerenciador</span></h1>\n  <p class=\"sub\">Acesso autorizado. Clique para iniciar a varredura.</p>\n  <button id=\"btn\" onclick=\"buscar()\">Buscar arquivos</button>\n  <div class=\"etapas\" id=\"etapas\">\n    <div class=\"etapa\" id=\"e1\"><div class=\"icone\"><div class=\"espera\"></div></div><span>Autenticando no Dropbox</span></div>\n    <div class=\"etapa\" id=\"e2\"><div class=\"icone\"><div class=\"espera\"></div></div><span>Obtendo namespace da conta</span></div>\n    <div class=\"etapa\" id=\"e3\"><div class=\"icone\"><div class=\"espera\"></div></div><span>Listando pastas e arquivos</span></div>\n    <div class=\"etapa\" id=\"e4\"><div class=\"icone\"><div class=\"espera\"></div></div><span>Paginando resultados</span></div>\n    <div class=\"etapa\" id=\"e5\"><div class=\"icone\"><div class=\"espera\"></div></div><span>Calculando uso de espaço</span></div>\n    <div class=\"etapa\" id=\"e6\"><div class=\"icone\"><div class=\"espera\"></div></div><span>Gerando relatório final</span></div>\n  </div>\n</div>\n<script>\nfunction setEtapa(id, estado) {\n  var el = document.getElementById(id);\n  el.classList.remove('ativa','ok');\n  var icone = el.querySelector('.icone');\n  if (estado === 'ativa') {\n    el.classList.add('ativa');\n    icone.innerHTML = '<div class=\"spinner\"></div>';\n  } else if (estado === 'ok') {\n    el.classList.add('ok');\n    icone.innerHTML = '<div class=\"check\"></div>';\n  } else {\n    icone.innerHTML = '<div class=\"espera\"></div>';\n  }\n}\n\nfunction buscar() {\n  var btn = document.getElementById('btn');\n  var etapas = document.getElementById('etapas');\n\n  btn.disabled = true;\n  btn.textContent = 'Buscando...';\n  etapas.style.display = 'block';\n\n  // Etapa 1 — autenticação (imediato)\n  setEtapa('e1','ativa');\n\n  setTimeout(function() {\n    setEtapa('e1','ok');\n    setEtapa('e2','ativa');\n  }, 800);\n\n  setTimeout(function() {\n    setEtapa('e2','ok');\n    setEtapa('e3','ativa');\n  }, 1800);\n\n  setTimeout(function() {\n    setEtapa('e3','ok');\n    setEtapa('e4','ativa');\n\n    // Inicia a requisição real junto com a etapa de paginação\n    fetch('/webhook/dropbox-processar', { method: 'POST' })\n    .then(function(r) { return r.text(); })\n    .then(function(html) {\n      setEtapa('e4','ok');\n      setEtapa('e5','ativa');\n      setTimeout(function() {\n        setEtapa('e5','ok');\n        setEtapa('e6','ativa');\n        setTimeout(function() {\n          setEtapa('e6','ok');\n          setTimeout(function() {\n            document.open(); document.write(html); document.close();\n          }, 600);\n        }, 700);\n      }, 800);\n    })\n    .catch(function() {\n      btn.disabled = false;\n      btn.textContent = 'Tentar novamente';\n      etapas.style.display = 'none';\n    });\n\n  }, 2800);\n}\n</script>\n</body>\n</html>",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1056,
+        208
+      ],
+      "id": "ee517498-d8b1-5590-8266-f5d136db3b71",
+      "name": "GRANT ACCESS"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "<!DOCTYPE html>\n<html lang=\"pt-BR\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<title>YOUR_COMPANY — Acesso</title>\n<link href=\"https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@800&display=swap\" rel=\"stylesheet\">\n<style>\n*{margin:0;padding:0;box-sizing:border-box}\nbody{background:#0a0a0f;color:#e8e8f0;font-family:'Space Mono',monospace;min-height:100vh;display:flex;align-items:center;justify-content:center}\nbody::before{content:\"\";position:fixed;inset:0;background-image:linear-gradient(rgba(0,97,254,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,97,254,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}\n.card{background:#111118;border:1px solid #1e1e2e;border-radius:6px;padding:40px 36px;width:100%;max-width:380px;position:relative;z-index:1}\n.card::before{content:\"\";position:absolute;top:0;left:0;right:0;height:2px;background:#0061fe;border-radius:6px 6px 0 0}\n.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,97,254,.12);border:1px solid rgba(0,97,254,.3);color:#00c2ff;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:2px;margin-bottom:16px}\n.dot{width:6px;height:6px;border-radius:50%;background:#00c2ff;animation:pulse 2s ease-in-out infinite}\n@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}\nh1{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-1px;margin-bottom:6px}\nh1 span{color:#0061fe}\n.sub{font-size:10px;color:#5a5a72;margin-bottom:28px}\nlabel{display:block;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#5a5a72;margin-bottom:6px}\ninput{width:100%;background:#0a0a0f;border:1px solid #1e1e2e;color:#e8e8f0;font-family:'Space Mono',monospace;font-size:12px;padding:10px 14px;border-radius:3px;outline:none;transition:border-color .2s;margin-bottom:18px}\ninput:focus{border-color:#0061fe}\nbutton{width:100%;background:#0061fe;border:none;color:#fff;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;padding:12px;border-radius:3px;cursor:pointer}\nbutton:disabled{opacity:.4;cursor:not-allowed}\n.erro{background:rgba(255,59,48,.08);border:1px solid rgba(255,59,48,.3);color:#ff6b6b;font-size:10px;padding:10px 14px;border-radius:3px;margin-bottom:18px;\n  /* ★ PASSO 7 (login limpo): adicione display:none aqui */\n  /* ★ PASSO 5 (erro):        remova o display:none     */\n}\n</style>\n</head>\n<body>\n<div class=\"card\">\n  <div class=\"badge\"><div class=\"dot\"></div>Dropbox · YOUR_COMPANY</div>\n  <h1>Acesso ao <span>Gerenciador</span></h1>\n  <p class=\"sub\">Informe suas credenciais para continuar</p>\n  <div class=\"erro\" id=\"erro\">Usuário ou senha inválidos.</div>\n  <label for=\"u\">Usuário</label>\n  <input type=\"text\" id=\"u\" placeholder=\"seu usuário\">\n  <label for=\"p\">Senha</label>\n  <input type=\"password\" id=\"p\" placeholder=\"••••••••\">\n  <button id=\"btn\" onclick=\"entrar()\">Entrar</button>\n</div>\n<script>\ndocument.getElementById('p').onkeydown = function(e){ if(e.key==='Enter') entrar(); };\ndocument.getElementById('u').onkeydown = function(e){ if(e.key==='Enter') document.getElementById('p').focus(); };\nfunction entrar(){\n  var u=document.getElementById('u').value.trim();\n  var p=document.getElementById('p').value;\n  var btn=document.getElementById('btn');\n  if(!u||!p){ document.getElementById('erro').style.display='block'; document.getElementById('erro').textContent='Preencha usuário e senha.'; return; }\n  btn.disabled=true; btn.textContent='Aguarde...';\n  fetch('/webhook/dropbox-auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({user:u,pwd:p})})\n  .then(function(r){return r.text();})\n  .then(function(html){document.open();document.write(html);document.close();})\n  .catch(function(){btn.disabled=false;btn.textContent='Entrar';document.getElementById('erro').style.display='block';document.getElementById('erro').textContent='Erro de conexão.';});\n}\n</script>\n</body>\n</html>",
+        "options": {
+          "responseCode": 401,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1056,
+        384
+      ],
+      "id": "141a8af1-1cc7-5c69-bc25-2dfc04c7040f",
+      "name": "DENY ACCESS"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dropbox-processar",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        80,
+        768
+      ],
+      "id": "1614cf6a-c473-5a76-9dbd-4731aa581e20",
+      "name": "Webhook DropBox",
+      "webhookId": "YOUR_WEBHOOK_ID_WEBHOOK_DROPBOX"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dropboxapi.com/2/files/list_folder",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "dropboxOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Dropbox-API-Path-Root",
+              "value": "={\".tag\": \"namespace_id\", \"namespace_id\": \"{{ $json.namespace_id }}\"} "
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"path\": \"/YOUR_FOLDER_PATH\",\n  \"recursive\": true,\n  \"include_deleted\": false,\n  \"limit\": 2000\n}",
+        "options": {
+          "response": {}
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        752,
+        768
+      ],
+      "id": "cadf1476-5faf-5c02-888a-d97b31cbb7d6",
+      "name": "List Folders"
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\n\nif (!staticData.entries) staticData.entries = [];\n\nconst PASTAS_EXCLUIDAS = [\n  '/YOUR_FOLDER_PATH/SubFolder1',\n  '/YOUR_FOLDER_PATH/SubFolder2',\n  '/YOUR_FOLDER_PATH/SubFolder3'\n];\n\nconst entries = $json.entries || [];\n\nconst soArquivos = entries.filter(function(e) {\n  if (e['.tag'] !== 'file') return false;\n  return !PASTAS_EXCLUIDAS.some(function(pasta) {\n    return e.path_lower.startsWith(pasta.toLowerCase());\n  });\n});\n\nstaticData.entries.push(...soArquivos);\n\nreturn [{\n  json: {\n    has_more:       $json.has_more,\n    cursor:         $json.cursor,\n    total_arquivos: staticData.entries.length,\n    total_pag:      soArquivos.length,\n    total_bruto:    entries.length\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1056,
+        768
+      ],
+      "id": "51715ef2-41a6-535b-a7fc-14d00e6dff07",
+      "name": "Aggregator"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "c025495b-34b0-403a-97cc-57887cb0d455",
+              "leftValue": "={{ $json.has_more }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        1232,
+        704
+      ],
+      "id": "7d4b1231-8862-5aba-be5f-e4c0a12e2ec9",
+      "name": "More Pages?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dropboxapi.com/2/users/get_space_usage",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "dropboxOAuth2Api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        1408,
+        896
+      ],
+      "id": "c926dbd9-a1f3-5dda-a3d1-e46339eaf060",
+      "name": "Get Space",
+      "credentials": {
+        "dropboxOAuth2Api": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Dropbox account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\n\nstaticData.space = {\n  used:      $json.used,\n  allocated: $json.allocation.allocated,\n  team_used: $json.allocation.used || $json.used\n};\n\n// Passa os dados adiante para o list_folder continuar\nreturn [{ json: $json }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1584,
+        896
+      ],
+      "id": "64c0b488-960a-59c3-bf78-5280bde3433a",
+      "name": "Space Used"
+    },
+    {
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\nconst todos = staticData.entries || [];\n\n// Deduplica por id e filtra mínimo de 100 MB\nconst MIN_BYTES = 100 * 1024 * 1024;\nconst vistos = {};\nconst arquivos = todos.filter(function(e) {\n  if (e['.tag'] !== 'file' || !e.server_modified || !e.size) return false;\n  if (e.size < MIN_BYTES) return false;\n  if (vistos[e.id]) return false;\n  vistos[e.id] = true;\n  return true;\n});\n\n// Normaliza idade e tamanho na mesma escala (0 a 1) antes de calcular o score\nconst agora = Date.now();\n\nconst maxIdade = Math.max.apply(null, arquivos.map(function(f) {\n  return agora - new Date(f.server_modified).getTime();\n}));\n\nconst maxTamanho = Math.max.apply(null, arquivos.map(function(f) {\n  return f.size || 0;\n}));\n\nconst ordenados = arquivos.sort(function(a, b) {\n  var idadeNormA = (agora - new Date(a.server_modified).getTime()) / maxIdade;\n  var idadeNormB = (agora - new Date(b.server_modified).getTime()) / maxIdade;\n  var tamNormA   = (a.size || 0) / maxTamanho;\n  var tamNormB   = (b.size || 0) / maxTamanho;\n  var scoreA = (tamNormA * 0.6) + (idadeNormA * 0.4);\n  var scoreB = (tamNormB * 0.6) + (idadeNormB * 0.4);\n  return scoreB - scoreA;\n});\n\nstaticData.entries = [];\n\nconst top50 = ordenados.slice(0, 50);\n\n// ── Espaço Dropbox ────────────────────────────────────────────\nvar space = staticData.space || {};\nvar TB = 1099511627776;\n\nvar spaceTotal  = space.allocated ? (space.allocated / TB).toFixed(2) + ' TB' : '--';\nvar spaceUsed   = space.team_used ? (space.team_used  / TB).toFixed(2) + ' TB' : '--';\nvar spaceFree   = (space.allocated && space.team_used)\n  ? ((space.allocated - space.team_used) / TB).toFixed(2) + ' TB' : '--';\nvar spacePct    = (space.allocated && space.team_used)\n  ? ((space.team_used / space.allocated) * 100).toFixed(1) + '%' : '--';\nvar spaceAlert  = space.allocated && space.team_used\n  && (space.team_used / space.allocated) > 0.85;\nvar spacePctNum = space.allocated && space.team_used\n  ? ((space.team_used / space.allocated) * 100).toFixed(1)\n  : '0';\n\n// ── Utilitários ───────────────────────────────────────────────\nfunction fmtDate(iso) {\n  if (!iso) return '--';\n  var d = new Date(iso);\n  return d.toLocaleDateString('pt-BR') + ' ' +\n         d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });\n}\n\nfunction timeAgo(iso) {\n  var diff = Date.now() - new Date(iso);\n  var d = Math.floor(diff / 86400000);\n  if (d < 1)  return 'hoje';\n  if (d < 30) return d + 'd atras';\n  var m = Math.floor(d / 30);\n  if (m < 12) return '~' + m + ' meses atras';\n  return '~' + Math.floor(m / 12) + ' ano(s) atras';\n}\n\nfunction fmtSize(bytes) {\n  var mb = bytes / 1048576;\n  if (mb >= 1024) return (mb / 1024).toFixed(2) + ' GB';\n  return mb.toFixed(0) + ' MB';\n}\n\nfunction dropboxUrl(pathDisplay) {\n  var pasta = pathDisplay.substring(0, pathDisplay.lastIndexOf('/'));\n  return 'https://www.dropbox.com/home' + pasta.replace(/ /g, '%20');\n}\n\n// ── Stats dos arquivos ────────────────────────────────────────\nvar totalBytes = top50.reduce(function(s, f) { return s + (f.size || 0); }, 0);\nvar maxBytes   = Math.max.apply(null, top50.map(function(f) { return f.size || 0; }));\nvar oldest     = top50.slice().sort(function(a,b){ return new Date(a.server_modified) - new Date(b.server_modified); })[0];\nvar heaviest   = top50.slice().sort(function(a, b) { return b.size - a.size; })[0];\n\nvar totalStr = totalBytes >= 1073741824\n  ? (totalBytes / 1073741824).toFixed(2) + ' GB'\n  : (totalBytes / 1048576).toFixed(0) + ' MB';\n\n// ── Linhas da tabela ──────────────────────────────────────────\nvar rows = top50.map(function(f, i) {\n  var pct = Math.min(100, ((f.size || 0) / maxBytes) * 100).toFixed(1);\n  var big = (f.size || 0) > 1073741824;\n  var bar = big\n    ? 'background:linear-gradient(90deg,#ff6b2b,#ff3b30)'\n    : 'background:linear-gradient(90deg,#0061fe,#00c2ff)';\n  var url = dropboxUrl(f.path_display);\n\n  return '<tr>'\n    + '<td style=\"text-align:center;color:#5a5a72;font-size:10px;padding:10px 14px\">' + (i + 1) + '</td>'\n    + '<td style=\"padding:10px 14px;font-family:monospace;font-size:11px\">'\n      + '<span style=\"color:#e8e8f0;font-weight:700;display:block;word-break:break-word\">' + f.name + '</span>'\n      + '<span style=\"color:#5a5a72;font-size:9px;display:block;word-break:break-all;margin-top:2px\">' + f.path_display + '</span>'\n      + '<button class=\"cbtn\" data-url=\"' + url + '\" '\n        + 'style=\"margin-top:6px;background:rgba(0,97,254,.1);border:1px solid rgba(0,97,254,.3);'\n        + 'color:#00c2ff;font-family:monospace;font-size:9px;letter-spacing:.5px;'\n        + 'padding:3px 9px;border-radius:2px;cursor:pointer\">'\n        + '&#128203; Copiar link Dropbox'\n      + '</button>'\n    + '</td>'\n    + '<td style=\"padding:10px 14px;font-family:monospace;font-size:11px;white-space:nowrap\">'\n      + fmtDate(f.server_modified)\n      + '<span style=\"display:block;color:#5a5a72;font-size:9px;margin-top:2px\">' + timeAgo(f.server_modified) + '</span>'\n    + '</td>'\n    + '<td style=\"padding:10px 14px;font-family:monospace;font-size:11px;text-align:right;white-space:nowrap\">'\n      + '<span style=\"display:block\">' + fmtSize(f.size || 0) + '</span>'\n      + '<div style=\"height:3px;background:rgba(255,255,255,0.05);border-radius:2px;margin-top:5px;width:80px;margin-left:auto\">'\n        + '<div style=\"height:100%;width:' + pct + '%;border-radius:2px;' + bar + '\"></div>'\n      + '</div>'\n    + '</td>'\n    + '</tr>';\n}).join('');\n\n// ── DATA para JS ──────────────────────────────────────────────\nvar dataJson = JSON.stringify(top50.map(function(f) {\n  return {\n    name: f.name,\n    path: f.path_display,\n    url:  dropboxUrl(f.path_display),\n    date: f.server_modified,\n    size: f.size || 0\n  };\n}));\n\n// ── HTML Final ────────────────────────────────────────────────\nvar html = '<!DOCTYPE html>'\n+ '<html lang=\"pt-BR\">'\n+ '<head>'\n+ '<meta charset=\"UTF-8\">'\n+ '<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">'\n+ '<title>Top 50 arquivos por tamanho e antiguidade - YOUR_COMPANY</title>'\n+ '<link href=\"https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@800&display=swap\" rel=\"stylesheet\">'\n+ '<style>'\n+ '*{margin:0;padding:0;box-sizing:border-box}'\n+ 'body{background:#0a0a0f;color:#e8e8f0;font-family:Space Mono,monospace;padding:28px 20px;min-height:100vh}'\n+ 'body::before{content:\"\";position:fixed;inset:0;background-image:linear-gradient(rgba(0,97,254,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,97,254,.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}'\n+ '.wrap{max-width:1100px;margin:0 auto;position:relative;z-index:1}'\n+ '.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,97,254,.12);border:1px solid rgba(0,97,254,.3);color:#00c2ff;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border-radius:2px;margin-bottom:12px}'\n+ '.dot{width:6px;height:6px;border-radius:50%;background:#00c2ff;animation:pulse 2s ease-in-out infinite}'\n+ '@keyframes pulse{0%,100%{opacity:1}50%{opacity:.2}}'\n+ 'h1{font-family:Syne,sans-serif;font-size:clamp(20px,4vw,34px);font-weight:800;letter-spacing:-1px;color:#fff;margin-bottom:4px}'\n+ 'h1 span{color:#0061fe}'\n+ '.sub{font-size:10px;color:#5a5a72;letter-spacing:.5px;margin-bottom:20px}'\n+ '.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}'\n+ '.sc{background:#111118;border:1px solid #1e1e2e;border-radius:4px;padding:14px 16px;position:relative;overflow:hidden}'\n+ '.sc::after{content:\"\";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#0061fe,#00c2ff)}'\n+ '.sc.space-block::after{background:linear-gradient(90deg,#7c3aed,#00c2ff)}'\n+ '.sc.alerta::after{background:linear-gradient(90deg,#ff6b2b,#ff3b30)}'\n+ '.sl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#5a5a72;margin-bottom:5px}'\n+ '.sv{font-size:20px;font-weight:700;color:#fff}'\n+ '.sv.warn{color:#ff6b2b}'\n+ '.sv.sm{font-size:13px;padding-top:3px}'\n+ '.divider{height:1px;background:#1e1e2e;margin:4px 0 16px}'\n+ '.section-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#5a5a72;margin-bottom:10px}'\n+ '.pct-bar-wrap{margin-top:8px;height:4px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden}'\n+ '.pct-bar{height:100%;border-radius:2px;transition:width .5s}'\n+ '.toolbar{display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap}'\n+ '.srch{flex:1;min-width:180px;position:relative}'\n+ '.srch input{width:100%;background:#111118;border:1px solid #1e1e2e;color:#e8e8f0;font-family:monospace;font-size:11px;padding:9px 12px 9px 32px;border-radius:3px;outline:none;transition:border-color .2s}'\n+ '.srch input:focus{border-color:#0061fe}'\n+ '.srch::before{content:\"search\";font-family:monospace;position:absolute;left:10px;top:50%;transform:translateY(-50%);color:#5a5a72;font-size:13px;pointer-events:none}'\n+ '.sbtn{background:#111118;border:1px solid #1e1e2e;color:#5a5a72;font-family:monospace;font-size:9px;letter-spacing:1px;padding:9px 14px;border-radius:3px;cursor:pointer;text-transform:uppercase;transition:all .2s}'\n+ '.sbtn:hover,.sbtn.active{border-color:#0061fe;color:#00c2ff}'\n+ '.cnt{font-size:10px;color:#5a5a72;white-space:nowrap}'\n+ '.tw{background:#111118;border:1px solid #1e1e2e;border-radius:4px;overflow:hidden}'\n+ 'table{width:100%;border-collapse:collapse}'\n+ 'thead{background:rgba(0,97,254,.06);border-bottom:1px solid #1e1e2e}'\n+ 'th{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#5a5a72;padding:11px 14px;text-align:left;white-space:nowrap}'\n+ 'th:last-child{text-align:right}'\n+ 'tbody tr{border-bottom:1px solid rgba(30,30,46,.6);transition:background .15s}'\n+ 'tbody tr:last-child{border-bottom:none}'\n+ 'tbody tr:hover{background:rgba(0,97,254,.04)}'\n+ '.cbtn{transition:all .2s}'\n+ '.cbtn:hover{background:rgba(0,97,254,.2) !important}'\n+ 'footer{margin-top:16px;font-size:9px;color:#5a5a72;text-align:right;letter-spacing:.5px}'\n+ '</style>'\n+ '</head>'\n+ '<body>'\n+ '<div class=\"wrap\">'\n+ '<div class=\"badge\"><div class=\"dot\"></div>Dropbox &middot; YOUR_COMPANY</div>'\n+ '<h1>Top 50 arquivos <span>por Tamanho e Antiguidade</span></h1>'\n+ '<p class=\"sub\">Gerado em ' + new Date().toLocaleString('pt-BR') + ' &middot; Score: 60% tamanho + 40% antiguidade &middot; Min. 100 MB</p>'\n\n+ '<div class=\"section-label\">Armazenamento Dropbox Business</div>'\n+ '<div class=\"stats\">'\n  + '<div class=\"sc space-block\"><div class=\"sl\">Espaco Total</div><div class=\"sv sm\">' + spaceTotal + '</div></div>'\n  + '<div class=\"sc space-block\"><div class=\"sl\">Espaco Usado</div><div class=\"sv sm\">' + spaceUsed + '</div></div>'\n  + '<div class=\"sc space-block\"><div class=\"sl\">Espaco Livre</div><div class=\"sv sm\">' + spaceFree + '</div></div>'\n  + '<div class=\"sc space-block ' + (spaceAlert ? 'alerta' : '') + '\">'\n    + '<div class=\"sl\">Uso do Time</div>'\n    + '<div class=\"sv sm ' + (spaceAlert ? 'warn' : '') + '\">' + spacePct + '</div>'\n    + '<div class=\"pct-bar-wrap\">'\n      + '<div class=\"pct-bar\" style=\"width:' + spacePctNum + '%;' + (spaceAlert ? 'background:linear-gradient(90deg,#ff6b2b,#ff3b30)' : 'background:linear-gradient(90deg,#7c3aed,#00c2ff)') + '\"></div>'\n    + '</div>'\n  + '</div>'\n+ '</div>'\n\n+ '<div class=\"divider\"></div>'\n+ '<div class=\"section-label\">Arquivos listados</div>'\n+ '<div class=\"stats\">'\n  + '<div class=\"sc\"><div class=\"sl\">Arquivos</div><div class=\"sv\">' + top50.length + '</div></div>'\n  + '<div class=\"sc\"><div class=\"sl\">Tamanho Total</div><div class=\"sv\">' + totalStr + '</div></div>'\n  + '<div class=\"sc\"><div class=\"sl\">Mais Antigo</div><div class=\"sv sm\">' + fmtDate(oldest && oldest.server_modified) + '</div></div>'\n  + '<div class=\"sc\"><div class=\"sl\">Maior Arquivo</div><div class=\"sv warn sm\">' + fmtSize((heaviest && heaviest.size) || 0) + '</div></div>'\n+ '</div>'\n+ '<div class=\"divider\"></div>'\n\n+ '<div class=\"toolbar\">'\n  + '<div class=\"srch\"><input type=\"text\" id=\"q\" placeholder=\"Filtrar por nome ou caminho...\" oninput=\"filtrar()\"></div>'\n  + '<button class=\"sbtn active\" id=\"b-score\" onclick=\"ordenar(\\'score\\')\">&#8593; Score</button>'\n  + '<button class=\"sbtn\" id=\"b-date\" onclick=\"ordenar(\\'date\\')\">Data</button>'\n  + '<button class=\"sbtn\" id=\"b-size\" onclick=\"ordenar(\\'size\\')\">Tamanho</button>'\n  + '<span class=\"cnt\" id=\"cnt\">' + top50.length + ' de ' + top50.length + ' arquivos</span>'\n+ '</div>'\n+ '<div class=\"tw\">'\n  + '<table>'\n    + '<thead><tr>'\n      + '<th style=\"width:44px;text-align:center\">#</th>'\n      + '<th>Arquivo</th>'\n      + '<th>Enviado ao Dropbox</th>'\n      + '<th>Tamanho</th>'\n    + '</tr></thead>'\n    + '<tbody id=\"tbody\">' + rows + '</tbody>'\n  + '</table>'\n+ '</div>'\n+ '<footer>YOUR_COMPANY &middot; n8n Workflow Automation</footer>'\n+ '</div>'\n+ '<script>'\n+ 'var DATA=' + dataJson + ';'\n+ 'var sortKey=\"score\";'\n+ 'var agora=Date.now();'\n+ 'var maxSize=Math.max.apply(null,DATA.map(function(f){return f.size;}));'\n+ 'var maxIdade=Math.max.apply(null,DATA.map(function(f){return agora-new Date(f.date).getTime();}));'\n+ 'function score(f){var t=f.size/maxSize;var i=(agora-new Date(f.date).getTime())/maxIdade;return(t*0.6)+(i*0.4);}'\n+ 'function fmtD(iso){var d=new Date(iso);return d.toLocaleDateString(\"pt-BR\")+\" \"+d.toLocaleTimeString(\"pt-BR\",{hour:\"2-digit\",minute:\"2-digit\"});}'\n+ 'function ago(iso){var diff=Date.now()-new Date(iso);var d=Math.floor(diff/86400000);if(d<1)return\"hoje\";if(d<30)return d+\"d atras\";var m=Math.floor(d/30);if(m<12)return\"~\"+m+\" meses atras\";return\"~\"+Math.floor(m/12)+\" ano(s) atras\";}'\n+ 'function fmtS(b){var mb=b/1048576;if(mb>=1024)return(mb/1024).toFixed(2)+\" GB\";return mb.toFixed(0)+\" MB\";}'\n+ 'function copiar(url,btn){'\n  + 'var el=document.createElement(\"textarea\");'\n  + 'el.value=url;'\n  + 'el.style.position=\"fixed\";el.style.top=\"-9999px\";'\n  + 'document.body.appendChild(el);'\n  + 'el.focus();el.select();'\n  + 'try{'\n    + 'document.execCommand(\"copy\");'\n    + 'var orig=btn.innerHTML;'\n    + 'btn.innerHTML=\"&#10003; Copiado!\";'\n    + 'btn.style.borderColor=\"#00e5a0\";btn.style.color=\"#00e5a0\";'\n    + 'setTimeout(function(){btn.innerHTML=orig;btn.style.borderColor=\"rgba(0,97,254,.3)\";btn.style.color=\"#00c2ff\";},2000);'\n  + '}catch(e){btn.innerHTML=\"Erro\";}'\n  + 'document.body.removeChild(el);'\n+ '}'\n+ 'document.getElementById(\"tbody\").addEventListener(\"click\",function(e){'\n  + 'var btn=e.target.closest(\".cbtn\");'\n  + 'if(btn)copiar(btn.getAttribute(\"data-url\"),btn);'\n+ '});'\n+ 'function render(data){'\n  + 'var tbody=document.getElementById(\"tbody\");'\n  + 'tbody.innerHTML=data.map(function(f,i){'\n    + 'var pct=Math.min(100,(f.size/maxSize)*100).toFixed(1);'\n    + 'var big=f.size>1073741824;'\n    + 'var bar=big?\"background:linear-gradient(90deg,#ff6b2b,#ff3b30)\":\"background:linear-gradient(90deg,#0061fe,#00c2ff)\";'\n    + 'return \"<tr>\"'\n      + '+\"<td style=\\\\\"text-align:center;color:#5a5a72;font-size:10px;padding:10px 14px\\\\\">\"+(i+1)+\"</td>\"'\n      + '+\"<td style=\\\\\"padding:10px 14px;font-size:11px\\\\\">\"'\n        + '+\"<span style=\\\\\"color:#e8e8f0;font-weight:700;display:block;word-break:break-word\\\\\">\"+f.name+\"</span>\"'\n        + '+\"<span style=\\\\\"color:#5a5a72;font-size:9px;display:block;word-break:break-all;margin-top:2px\\\\\">\"+f.path+\"</span>\"'\n        + '+\"<button class=\\\\\"cbtn\\\\\" data-url=\\\\\"\"+f.url+\"\\\\\" style=\\\\\"margin-top:6px;background:rgba(0,97,254,.1);border:1px solid rgba(0,97,254,.3);color:#00c2ff;font-family:monospace;font-size:9px;padding:3px 9px;border-radius:2px;cursor:pointer\\\\\">&#128203; Copiar link Dropbox</button>\"'\n      + '+\"</td>\"'\n      + '+\"<td style=\\\\\"padding:10px 14px;font-size:11px;white-space:nowrap\\\\\">\"'\n        + '+fmtD(f.date)+\"<span style=\\\\\"display:block;color:#5a5a72;font-size:9px;margin-top:2px\\\\\">\"+ago(f.date)+\"</span>\"'\n      + '+\"</td>\"'\n      + '+\"<td style=\\\\\"padding:10px 14px;font-size:11px;text-align:right;white-space:nowrap\\\\\">\"'\n        + '+\"<span style=\\\\\"display:block\\\\\">\"+fmtS(f.size)+\"</span>\"'\n        + '+\"<div style=\\\\\"height:3px;background:rgba(255,255,255,.05);border-radius:2px;margin-top:5px;width:80px;margin-left:auto\\\\\">\"'\n          + '+\"<div style=\\\\\"height:100%;width:\"+pct+\"%;border-radius:2px;\"+bar+\"\\\\\" ></div></div>\"'\n      + '+\"</td></tr>\";'\n  + '}).join(\"\");'\n  + 'document.getElementById(\"cnt\").textContent=data.length+\" de \"+DATA.length+\" arquivos\";'\n+ '}'\n+ 'function filtrar(){'\n  + 'var q=document.getElementById(\"q\").value.toLowerCase();'\n  + 'aplicar(q,sortKey);'\n+ '}'\n+ 'function ordenar(k){'\n  + 'sortKey=k;'\n  + 'document.querySelectorAll(\".sbtn\").forEach(function(b){b.classList.remove(\"active\");});'\n  + 'document.getElementById(\"b-\"+k).classList.add(\"active\");'\n  + 'aplicar(document.getElementById(\"q\").value.toLowerCase(),k);'\n+ '}'\n+ 'function aplicar(q,k){'\n  + 'var data=DATA.filter(function(f){return f.name.toLowerCase().indexOf(q)>-1||f.path.toLowerCase().indexOf(q)>-1;});'\n  + 'if(k===\"size\") data=data.sort(function(a,b){return b.size-a.size;});'\n  + 'else if(k===\"date\") data=data.sort(function(a,b){return new Date(a.date)-new Date(b.date);});'\n  + 'else data=data.sort(function(a,b){return score(b)-score(a);});'\n  + 'render(data);'\n+ '}'\n+ '<\\/script>'\n+ '</body></html>';\n\nreturn [{ json: { html: html } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        896
+      ],
+      "id": "53462e48-3d0e-5a35-87dd-3decf7a727c6",
+      "name": "Output"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dropboxapi.com/2/files/list_folder/continue",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "dropboxOAuth2Api",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "Dropbox-API-Path-Root",
+              "value": "={\".tag\": \"namespace_id\", \"namespace_id\": \"{{ $('Get Name Space').item.json.root_info.root_namespace_id }}\"} "
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"cursor\": \"{{ $json.cursor }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        2272,
+        864
+      ],
+      "id": "7f083a61-b521-591d-9212-f9e0e5a3b431",
+      "name": "Pages"
+    },
+    {
+      "parameters": {
+        "content": "## Processamento\n",
+        "height": 512,
+        "width": 2464,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        640
+      ],
+      "typeVersion": 1,
+      "id": "352a6959-4484-5499-96a7-301f7343e992",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n### COMO CONFIGURAR A CREDENCIAL DROPBOX\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nPASSO 1 — Criar o app no Dropbox\n  Acesse: dropbox.com/developers/apps\n  → Create app\n  → API: Scoped Access\n  → Acesso: Full Dropbox\n  → Nome: n8n-cross (ou qualquer nome)\n  → Create app\n\nPASSO 2 — Configurar Redirect URI\n  Aba Settings → OAuth 2 → Redirect URIs\n  Adicionar:\n  https://<seu-dominio-n8n>/rest/\n  oauth2-credential/callback\n\nPASSO 3 — Ativar permissões\n  Aba Permissions → marcar:\n  • account_info.write\n  • files.metadata.write\n  • files.content.write\n  • files.content.read\n  • sharing.write\n  • file_requests.write\n  • contacts.write\n  → Submit\n\n → CONTINUA AO LADO",
+        "height": 576,
+        "width": 560
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1328,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "1b90c86a-ec0e-5c32-8f67-9170518a2f5b",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "\nPASSO 4 — Copiar as chaves\n  Aba Settings:\n  • App key    → campo Client ID no n8n\n  • App secret → campo Client Secret no n8n\n    (clicar em Show para revelar)\n\nPASSO 5 — Criar credencial no n8n\n  Credentials → New\n  → buscar \"Dropbox OAuth2 API\"\n  → colar App key e App secret\n  → Connect my account\n  → autorizar no popup do Dropbox\n  → salvar como \"Dropbox account\"\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nOBSERVAÇÕES\n  • O app fica em modo Development por padrão.\n    Para uso interno isso é suficiente.\n  • Esta credencial é usada nos nós:\n    Get Name Space, List Folders,\n    Pages e Get Space.\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n### DATA TABLES\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\nTABLE: dropbox\nid: number\nuser: string\npwd: string",
+        "height": 576,
+        "width": 560
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1904,
+        0
+      ],
+      "typeVersion": 1,
+      "id": "9effccaf-56dd-5d0f-929e-20182b875c57",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "List Folders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Name Space": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Login": {
+      "main": [
+        [
+          {
+            "node": "Check Login",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook_Start": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dropbox-Auth": {
+      "main": [
+        [
+          {
+            "node": "Get Login",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Login": {
+      "main": [
+        [
+          {
+            "node": "Login OK ?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Login OK ?": {
+      "main": [
+        [
+          {
+            "node": "GRANT ACCESS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "DENY ACCESS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook DropBox": {
+      "main": [
+        [
+          {
+            "node": "Get Name Space",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Folders": {
+      "main": [
+        [
+          {
+            "node": "Aggregator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregator": {
+      "main": [
+        [
+          {
+            "node": "More Pages?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "More Pages?": {
+      "main": [
+        [
+          {
+            "node": "Pages",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Space",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Space": {
+      "main": [
+        [
+          {
+            "node": "Space Used",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Space Used": {
+      "main": [
+        [
+          {
+            "node": "Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Output": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pages": {
+      "main": [
+        [
+          {
+            "node": "Aggregator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "YOUR_VERSION_ID",
+  "meta": {
+    "instanceId": "YOUR_INSTANCE_ID"
+  },
+  "id": "YOUR_WORKFLOW_ID",
+  "tags": []
+}
