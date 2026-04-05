@@ -7,30 +7,9 @@
 <img width="503" height="491" alt="Captura de Tela 2026-04-05 às 18 25 59" src="https://github.com/user-attachments/assets/033fab60-77f3-486c-be9c-1a3e9ea4401b" />
 
 
+![Gravação de Tela 2026-04-05 às 18 30 13](https://github.com/user-attachments/assets/febd73c7-4376-43cc-8ab0-2cab291c67f8)
 
-```
-┌─────────────────────────────────────┐
-│  ● Dropbox · SUA EMPRESA            │
-│                                     │
-│  Acesso ao Gerenciador              │
-│  ─────────────────────────────────  │
-│  Usuário  [_____________________]   │
-│  Senha    [_____________________]   │
-│                  [ Entrar ]         │
-└─────────────────────────────────────┘
-         ↓ login válido
-┌─────────────────────────────────────┐
-│  Espaço Total │ Usado │ Livre │ %   │
-│  ─────────────────────────────────  │
-│  Top 50 arquivos por Score          │
-│  (60% tamanho + 40% antiguidade)    │
-│  [ Filtrar... ] [Score][Data][Tam]  │
-│  #  Arquivo        Data     Tamanho │
-│  1  relatorio.pdf  há 2 anos  4 GB  │
-│  2  backup.zip     há 1 ano   2 GB  │
-│  ...                                │
-└─────────────────────────────────────┘
-```
+<img width="2639" height="8000" alt="Untitled design (95)" src="https://github.com/user-attachments/assets/19509f9e-e05a-4ba3-a31f-2341a877aa4e" />
 
 ---
 
