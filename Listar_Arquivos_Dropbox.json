@@ -414,7 +414,7 @@
     },
     {
       "parameters": {
-        "jsCode": "const staticData = $getWorkflowStaticData('global');\n\nstaticData.space = {\n  used:      $json.used,\n  allocated: $json.allocation.allocated,\n  team_used: $json.allocation.used || $json.used\n};\n\n// Passa os dados adiante para o list_folder continuar\nreturn [{ json: $json }];"
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\n\nstaticData.space = {\n  used:      $json.used,\n  allocated: $json.allocation.allocated,\n  team_used: $json.used\n};\n\n// Passa os dados adiante para o list_folder continuar\nreturn [{ json: $json }];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
